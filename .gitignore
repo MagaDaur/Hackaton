@@ -3,3 +3,4 @@ image_cache/
 train_dataset/
 .vscode/
 .flutter-plugins-dependencies
+README.md
