@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'dart:js_interop';
-
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -37,7 +36,7 @@ class MyApp extends State<Widget1> {
   String selectedItem = ' Скульптура';
   String textFieldValue = '';
   String resp = "";
-  File? _pickedImage;
+  var _pickedImage;
   Uint8List webImage = Uint8List(8);
 
   final Logger logger = Logger(); //логи не работают яхз пофиг)))
@@ -51,12 +50,12 @@ class MyApp extends State<Widget1> {
       final ImagePicker _picker = ImagePicker();
       XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        var selected = File(image.path);
+        var selected = Image.file(File(image.path));
         setState(() {
           _pickedImage = selected;
         });
 
-        _sendImageToServer(selected);
+        _sendImageToServer(image.readAsBytes() as Uint8List);
       } else {
         logger.d('Изображение не выбрано');
       }
@@ -64,12 +63,12 @@ class MyApp extends State<Widget1> {
       final ImagePicker _picker = ImagePicker();
       XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        var f= await image.readAsBytes();
+        var f = await image.readAsBytes();
         setState(() {
           webImage = f;
-          _pickedImage = File('a');
+          _pickedImage = Image.memory(f);
         });
-        _sendImageToServer(_pickedImage!);
+        _sendImageToServer(webImage!);
       } else {
         logger.d("Изображение не выбрано");
       }
@@ -78,13 +77,17 @@ class MyApp extends State<Widget1> {
     }
   }
 
-  Future<void> _sendImageToServer(File imageFile) async {
-    var url = Uri.parse('http://localhost:8000/upload'); //вот сюда ссылку на наш сервер
+  Future<void> _sendImageToServer(Uint8List imageFile) async {
+    var url = Uri.parse('http://localhost:8000/upload');
     var request = http.MultipartRequest('POST', url);
-    request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+    var file = await http.MultipartFile.fromBytes('image', imageFile);
+
+    request.files.add(file);
 
     var response = await request.send();
-    resp = response as String;
+    var responseData = await response.stream.bytesToString();
+    resp = responseData;
+
     if (response.statusCode == 200) {
       log('Изображение успешно загружено');
     } else {
@@ -92,7 +95,7 @@ class MyApp extends State<Widget1> {
     }
   }
 
-  void _processServerResponse(String response) {
+  Future<void> _processServerResponse(String response) async {
     Map<String, dynamic> responseData = json.decode(response);
     String desc = responseData['description'];
     List<String> photos = List<String>.from(responseData['image_requests']);
