@@ -2,3 +2,4 @@ __pycache__/
 image_cache/
 train_dataset/
 .vscode/
+.flutter-plugins-dependencies
