@@ -1,10 +1,10 @@
 from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import FileResponse
-import cv2
 
 from config import nn_classes, content_types, cache_folder_path
 
 import image_retrieval
+import image_description
 
 app = FastAPI()
 
@@ -25,10 +25,11 @@ def upload(request : Request, file_info: UploadFile = File(...)):
     file.close()
 
     paths = image_retrieval.get_similar_images(cached_image_path)
+    description = image_description.generate_image_description(cached_image_path)
 
     requests = [str(request.base_url) + f'image?file_path=../{paths[i]}' for i in range(10)]
 
-    return { 'image_requests': requests }
+    return { 'image_requests': requests, 'description': description }
 
 @app.get("/image")
 def image(file_path : str):
