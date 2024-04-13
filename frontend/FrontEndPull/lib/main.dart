@@ -94,10 +94,10 @@ class MyApp extends State<Widget1> {
 
   void _processServerResponse(String response) {
     Map<String, dynamic> responseData = json.decode(response);
-    String text = responseData['text'];
+    String desc = responseData['description'];
     List<String> photos = List<String>.from(responseData['image_requests']);
     setState(() {
-      serverText = text;
+      serverDesc = desc;
       serverPhotos = photos;
     });
   }
