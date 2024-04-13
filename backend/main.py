@@ -26,7 +26,7 @@ def upload(request : Request, file_info: UploadFile = File(...)):
 
     paths = image_retrieval.get_similar_images(cached_image_path)
 
-    requests = [str(request.base_url) + f'image?file_path={paths[i]}' for i in range(10)]
+    requests = [str(request.base_url) + f'image?file_path=../{paths[i]}' for i in range(10)]
 
     return { 'image_requests': requests }
 
