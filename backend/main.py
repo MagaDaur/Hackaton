@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from config import nn_classes, content_types, cache_folder_path
 
@@ -7,6 +8,7 @@ import image_retrieval
 import image_description
 
 app = FastAPI()
+app.add_middleware( CORSMiddleware, allow_origins=['*'] )
 
 @app.post("/upload")
 def upload(request : Request, file_info: UploadFile = File(...)):
