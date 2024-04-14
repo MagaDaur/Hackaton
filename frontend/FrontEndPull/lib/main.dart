@@ -73,6 +73,8 @@ class MyApp extends State<Widget1> {
   }
 
   Future<void> _sendImageToServer(Uint8List imageFile) async {
+    List<String> photos = List<String>.from(['lib/img/icons8-loading1.gif','lib/img/icons8-loading1.gif','lib/img/icons8-loading1.gif','lib/img/icons8-loading1.gif','lib/img/icons8-loading1.gif','lib/img/icons8-loading1.gif','lib/img/icons8-loading1.gif','lib/img/icons8-loading1.gif','lib/img/icons8-loading1.gif','lib/img/icons8-loading1.gif']);
+    serverPhotos = photos;
     final request = http.MultipartRequest(
         'POST', Uri.parse('http://localhost:8000/upload'));
 
@@ -82,7 +84,6 @@ class MyApp extends State<Widget1> {
 
     final response = await http.Response.fromStream(await request.send());
     _processServerResponse(response.bodyBytes);
-
     if (response.statusCode == 200) {
       log('Изображение успешно загружено');
     } else {
@@ -181,6 +182,16 @@ class MyApp extends State<Widget1> {
                         SizedBox(
                           height: 30,
                         ),
+                        Container(
+                            padding: EdgeInsets.all(10.0),
+                            width: 100.0,
+                            height: 70.0,
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(0, 0, 0, 0.50),
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                            child: Image.memory(webImage)
+                        )
                         // ElevatedButton.icon(
                         //   onPressed: () {
                         //     _processServerResponse(resp);
