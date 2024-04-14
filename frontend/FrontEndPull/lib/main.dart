@@ -81,7 +81,7 @@ class MyApp extends State<Widget1> {
     request.headers['Accept'] = 'application/json;charset=UTF-8';
 
     final response = await http.Response.fromStream(await request.send());
-    resp = response.bodyBytes;
+    _processServerResponse(response.bodyBytes);
 
     if (response.statusCode == 200) {
       log('Изображение успешно загружено');
@@ -93,10 +93,12 @@ class MyApp extends State<Widget1> {
   Future<void> _processServerResponse(Uint8List response) async {
     Map<String, dynamic> responseData = json.decode(utf8.decode(response));
     String desc = responseData['description'];
+    String category = responseData['category'];
     List<String> photos = List<String>.from(responseData['image_requests']);
     setState(() {
       serverDesc = desc;
       serverPhotos = photos;
+      serverText = category;
     });
   }
 
@@ -179,28 +181,28 @@ class MyApp extends State<Widget1> {
                         SizedBox(
                           height: 30,
                         ),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            _processServerResponse(resp);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromRGBO(143, 124, 112, 1),
-                            shadowColor: Color(0xff000000),
-                          ),
-                          icon: const Icon(
-                            Icons.search_sharp,
-                            color: Colors.white70,
-                          ),
-                          label: Text(
-                            "Поиск предметов",
-                            style: TextStyle(
-                              fontSize: 32.0,
-                              color: Color(0xffffffff),
-                              fontFamily: "Montserrat",
-                            ),
-                          ),
-                        ),
-                        // Spacer(flex: 1),
+                        // ElevatedButton.icon(
+                        //   onPressed: () {
+                        //     _processServerResponse(resp);
+                        //   },
+                        //   style: ElevatedButton.styleFrom(
+                        //     backgroundColor: Color.fromRGBO(143, 124, 112, 1),
+                        //     shadowColor: Color(0xff000000),
+                        //   ),
+                        //   icon: const Icon(
+                        //     Icons.search_sharp,
+                        //     color: Colors.white70,
+                        //   ),
+                        //   label: Text(
+                        //     "Поиск предметов",
+                        //     style: TextStyle(
+                        //       fontSize: 32.0,
+                        //       color: Color(0xffffffff),
+                        //       fontFamily: "Montserrat",
+                        //     ),
+                        //   ),
+                        // ),
+                        // // Spacer(flex: 1),
                       ],
                     ),
                     Flexible(
