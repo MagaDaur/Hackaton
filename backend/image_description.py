@@ -6,8 +6,8 @@ device = 'cpu'
 processor = BlipProcessor.from_pretrained('Salesforce/blip-image-captioning-base')
 model_blip = BlipForConditionalGeneration.from_pretrained('Salesforce/blip-image-captioning-base').to(device)
 
-model_t5 = T5ForConditionalGeneration.from_pretrained('utrobinmv/t5_translate_en_ru_zh_large_1024').to(device)
-tokenizer_t5 = T5Tokenizer.from_pretrained('utrobinmv/t5_translate_en_ru_zh_large_1024')
+model_t5 = T5ForConditionalGeneration.from_pretrained('utrobinmv/t5_translate_en_ru_zh_small_1024').to(device)
+tokenizer_t5 = T5Tokenizer.from_pretrained('utrobinmv/t5_translate_en_ru_zh_small_1024')
 
 def generate_image_description(file_path: str):
     image = Image.open(file_path)
