@@ -1,5 +1,4 @@
 __pycache__/
 image_cache/
 train_dataset/
-.vscode/
-frontend/FrontEndPull/.flutter-plugins-dependencies
+.*
