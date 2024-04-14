@@ -38,7 +38,6 @@ class MyApp extends State<Widget1> {
   String selectedItem = ' Скульптура';
   String textFieldValue = '';
   Uint8List resp = Uint8List(0);
-  var _pickedImage;
   Uint8List webImage = Uint8List(8);
 
   final Logger logger = Logger(); //логи не работают яхз пофиг)))
@@ -52,11 +51,6 @@ class MyApp extends State<Widget1> {
       final ImagePicker _picker = ImagePicker();
       XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        var selected = Image.file(File(image.path));
-        setState(() {
-          _pickedImage = selected;
-        });
-
         _sendImageToServer(image.readAsBytes() as Uint8List);
       } else {
         logger.d('Изображение не выбрано');
@@ -68,9 +62,8 @@ class MyApp extends State<Widget1> {
         var f = await image.readAsBytes();
         setState(() {
           webImage = f;
-          _pickedImage = Image.memory(f);
         });
-        _sendImageToServer(webImage!);
+        _sendImageToServer(webImage);
       } else {
         logger.d("Изображение не выбрано");
       }
