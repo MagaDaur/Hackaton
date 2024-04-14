@@ -3,5 +3,3 @@ image_cache/
 train_dataset/
 .vscode/
 backend/ResNet152.pth
-
-backend/ResNet152.pth
