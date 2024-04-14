@@ -36,7 +36,7 @@ class TrainLoader(Dataset):
             
         return image_path, category_index
 
-device = 'cuda:0'
+device = 'cpu'
 
 train_data = TrainLoader('train_dataset/train.csv')
 
