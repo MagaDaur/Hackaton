@@ -8,7 +8,7 @@ from config import nn_classes
 device = 'cpu'
 
 # Загрузка модели
-loaded_model = models.resnet152(pretrained=True)
+loaded_model = models.resnet152()
 num_ftrs = loaded_model.fc.in_features
 loaded_model.fc = nn.Linear(num_ftrs, 15)  # Указываем ту же архитектуру, что и при обучении
 loaded_model.load_state_dict(torch.load('ResNet152.pth', map_location=torch.device(device)))
