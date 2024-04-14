@@ -2,10 +2,11 @@ from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from config import nn_classes, content_types, cache_folder_path
+from config import content_types, cache_folder_path
 
 import image_retrieval
 import image_description
+import image_classify
 
 app = FastAPI()
 app.add_middleware( CORSMiddleware, allow_origins=['*'] )
@@ -28,10 +29,11 @@ def upload(request : Request, file_info: UploadFile = File(...)):
 
     paths = image_retrieval.get_similar_images(cached_image_path)
     description = image_description.generate_image_description(cached_image_path)
+    classification = image_classify.predict_image(cached_image_path)
 
     requests = [str(request.base_url) + f'image?file_path=../{paths[i]}' for i in range(10)]
 
-    return { 'image_requests': requests, 'description': description }
+    return { 'image_requests': requests, 'description': description, 'category': classification }
 
 @app.get("/image")
 def image(file_path : str):
