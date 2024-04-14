@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 
 import 'dart:js_interop';
 import 'dart:io';
+
+import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -35,7 +37,7 @@ class MyApp extends State<Widget1> {
   List<String> items = [' Скульптура', ' Живопись'];
   String selectedItem = ' Скульптура';
   String textFieldValue = '';
-  String resp = "";
+  Uint8List resp = Uint8List(0);
   var _pickedImage;
   Uint8List webImage = Uint8List(8);
 
@@ -78,15 +80,15 @@ class MyApp extends State<Widget1> {
   }
 
   Future<void> _sendImageToServer(Uint8List imageFile) async {
-    var url = Uri.parse('http://localhost:8000/upload');
-    var request = http.MultipartRequest('POST', url);
-    var file = await http.MultipartFile.fromBytes('image', imageFile);
+    final request = http.MultipartRequest(
+        'POST', Uri.parse('http://localhost:8000/upload'));
 
-    request.files.add(file);
+    request.files.add(http.MultipartFile.fromBytes('file_info', imageFile,
+        filename: 'image.jpg', contentType: MediaType('image', 'img')));
+    request.headers['Accept'] = 'application/json;charset=UTF-8';
 
-    var response = await request.send();
-    var responseData = await response.stream.bytesToString();
-    resp = responseData;
+    final response = await http.Response.fromStream(await request.send());
+    resp = response.bodyBytes;
 
     if (response.statusCode == 200) {
       log('Изображение успешно загружено');
@@ -95,8 +97,8 @@ class MyApp extends State<Widget1> {
     }
   }
 
-  Future<void> _processServerResponse(String response) async {
-    Map<String, dynamic> responseData = json.decode(response);
+  Future<void> _processServerResponse(Uint8List response) async {
+    Map<String, dynamic> responseData = json.decode(utf8.decode(response));
     String desc = responseData['description'];
     List<String> photos = List<String>.from(responseData['image_requests']);
     setState(() {
@@ -219,16 +221,16 @@ class MyApp extends State<Widget1> {
                               color: Color.fromRGBO(143, 124, 112, 1),
                               borderRadius: BorderRadius.circular(30.0),
                             ),
-                          child: Padding(
-                            padding: EdgeInsets.all(10.0),
-                            child:
-                          Text(
-                            serverText,
-                            style: TextStyle(
-                              fontSize: 26.0,
-                              color: Colors.white,
-                              fontFamily: "Montserrat",
-                              ),),
+                            child: Padding(
+                              padding: EdgeInsets.all(10.0),
+                              child: Text(
+                                serverText,
+                                style: TextStyle(
+                                  fontSize: 26.0,
+                                  color: Colors.white,
+                                  fontFamily: "Montserrat",
+                                ),
+                              ),
                             ),
                           ),
                           SizedBox(height: 5),
@@ -251,14 +253,14 @@ class MyApp extends State<Widget1> {
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(20.0),
-                              child:
-                              Text(
+                              child: Text(
                                 serverDesc,
                                 style: TextStyle(
                                   fontSize: 20.0,
                                   color: Colors.white70,
                                   fontFamily: "Montserrat",
-                                ),),
+                                ),
+                              ),
                             ),
                           ),
                         ],
